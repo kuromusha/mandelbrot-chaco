@@ -1,0 +1,7 @@
+# PyCharm
+.idea/
+
+# generated files
+build/
+*.c
+*.so
