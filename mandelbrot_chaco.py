@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 from chaco.api import ArrayPlotData, Plot
@@ -55,7 +56,9 @@ class MandelbrotPlot(HasStrictTraits):
     def _get_plot(self):
         x = np.linspace(self.ranges[0], self.ranges[1], num=1000)
         y = np.linspace(self.ranges[2], self.ranges[3], num=1000)
-        plot = Plot(ArrayPlotData(data=generate_mandelbrot(x[:-1], y[:-1], 100)))
+        min_range = min(self.ranges[1] - self.ranges[0], self.ranges[3] - self.ranges[2])
+        n = max(int(math.log10(3 / min_range) * 30 + 100), 1)
+        plot = Plot(ArrayPlotData(data=generate_mandelbrot(x[:-1], y[:-1], n)))
         plot.img_plot('data', xbounds=x, ybounds=y)
         plot.tools.append(MandelbrotPanTool(self, plot))
         plot.overlays.append(MandelbrotBetterSelectingZoom(self, plot, zoom_factor=1.05))
