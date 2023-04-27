@@ -65,7 +65,7 @@ class MandelbrotPlot(HasStrictTraits):
         return plot
 
     @observe('reset_zoom')
-    def reset_button(self, event):
+    def reset_zoom_pushed(self, event):
         self.ranges = self._default_ranges
 
     traits_view = View(
