@@ -74,6 +74,7 @@ class MandelbrotPlot(HasStrictTraits):
     @observe('reset_zoom')
     def _reset_zoom_pushed(self, event):
         self.ranges = self._default_ranges
+        self.plot = self._plot_default()
 
     @observe('ranges')
     def _plot_update(self, event):
