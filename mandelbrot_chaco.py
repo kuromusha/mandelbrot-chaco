@@ -4,8 +4,8 @@ import numpy as np
 from chaco.api import ArrayPlotData, Plot
 from chaco.tools.api import BetterSelectingZoom, PanTool
 from enable.api import ComponentEditor
-from traits.api import Array, Float, HasStrictTraits, Instance, observe
-from traitsui.api import HGroup, UItem, View
+from traits.api import Array, Event, Float, HasStrictTraits, Instance, observe
+from traitsui.api import ButtonEditor, UItem, View
 
 from mandel import generate_mandelbrot
 
@@ -50,8 +50,10 @@ class MandelbrotBetterSelectingZoom(BetterSelectingZoom):
 
 
 class MandelbrotPlot(HasStrictTraits):
-    ranges = Array(dtype=Float, value=[-2, 1, -1.5, 1.5])
+    _default_ranges = [-2, 1, -1.5, 1.5]
+    ranges = Array(dtype=Float, value=_default_ranges)
     plot = Instance(Plot)
+    reset_zoom = Event
 
     def _get_mandelbrot(self):
         x = np.linspace(self.ranges[0], self.ranges[1], num=1000)
@@ -66,7 +68,13 @@ class MandelbrotPlot(HasStrictTraits):
         plot.img_plot('data', xbounds=x, ybounds=y)
         plot.tools.append(MandelbrotPanTool(self, plot))
         plot.overlays.append(MandelbrotBetterSelectingZoom(self, plot, zoom_factor=1.05))
+        plot.padding_right = plot.padding_top = plot.padding_bottom = 20
         return plot
+
+    @observe('reset_zoom')
+    def _reset_zoom_pushed(self, event):
+        self.ranges = self._default_ranges
+        self.plot = self._plot_default()
 
     @observe('ranges')
     def _plot_update(self, event):
@@ -75,7 +83,8 @@ class MandelbrotPlot(HasStrictTraits):
         self.plot.img_plot('data', xbounds=x, ybounds=y)
 
     traits_view = View(
-        HGroup(UItem('plot', editor=ComponentEditor())),
+        UItem('plot', editor=ComponentEditor()),
+        UItem('reset_zoom', editor=ButtonEditor(label='Reset Zoom and Pan')),
         resizable=True,
     )
 
